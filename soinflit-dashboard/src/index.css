@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --flux: #00f2fe;
+  --emerald: #059669;
+  --solar: #f59e0b;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #040814;
+  color: #f4f8ff;
+  font-family: Sora, ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(0, 242, 254, 0.35);
+}
+
+@layer components {
+  /* Liquid glass surface: blur, translucent fill, layered border, specular top-left highlight. */
+  .glass {
+    @apply relative rounded-[28px] border border-white/15 bg-white/5 shadow-inner backdrop-blur-[24px];
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 0 32px rgba(255, 255, 255, 0.035),
+      0 24px 60px -28px rgba(0, 0, 0, 0.75);
+  }
+  .glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.55),
+      rgba(255, 255, 255, 0.06) 32%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(0, 242, 254, 0.22)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+  .glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(120% 70% at 0% 0%, rgba(255, 255, 255, 0.09), transparent 46%);
+    pointer-events: none;
+  }
+
+  .telemetry {
+    @apply font-mono tabular-nums;
+    text-shadow: 0 0 14px rgba(0, 242, 254, 0.45);
+  }
+  .telemetry-amber {
+    @apply font-mono tabular-nums;
+    text-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+  }
+
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-[0.18em] text-white/55;
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/90 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060c1c];
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+}
+
+/* Ambient bioluminescent blobs: static by default, drifting only when motion is welcome. */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
+}
+
+/* All looping motion lives behind this query; reduced-motion users get static, still-legible states. */
+@media (prefers-reduced-motion: no-preference) {
+  .anim-drift-a { animation: driftA 34s ease-in-out infinite alternate; }
+  .anim-drift-b { animation: driftB 41s ease-in-out infinite alternate; }
+  .anim-drift-c { animation: driftC 29s ease-in-out infinite alternate; }
+  .anim-wave { animation: wave 5.5s linear infinite; }
+  .anim-wave-slow { animation: waveRev 8.5s linear infinite; }
+  .anim-bubble { animation: bubble var(--dur, 3.2s) cubic-bezier(0.4, 0, 1, 1) infinite; }
+  .anim-drip { animation: drip var(--dur, 1.7s) cubic-bezier(0.5, 0, 1, 1) infinite; }
+  .anim-flow { animation: flow var(--dur, 2.4s) linear infinite; }
+  .anim-spin { animation: spin 9s linear infinite; }
+  .anim-spin-rev { animation: spin 13s linear infinite reverse; }
+  .anim-pulse-ring { animation: pulseRing 2.6s var(--ease-out) infinite; }
+  .anim-float { animation: float 6s ease-in-out infinite alternate; }
+  .anim-blink { animation: blink 2.2s ease-in-out infinite; }
+}
+
+@keyframes driftA {
+  0% { transform: translate3d(-8%, -6%, 0) scale(1); }
+  100% { transform: translate3d(14%, 10%, 0) scale(1.18); }
+}
+@keyframes driftB {
+  0% { transform: translate3d(10%, 4%, 0) scale(1.1); }
+  100% { transform: translate3d(-12%, -10%, 0) scale(0.92); }
+}
+@keyframes driftC {
+  0% { transform: translate3d(0, 12%, 0) scale(0.9); }
+  100% { transform: translate3d(-10%, -6%, 0) scale(1.12); }
+}
+@keyframes wave {
+  from { transform: translateX(0); }
+  to { transform: translateX(80px); }
+}
+@keyframes waveRev {
+  from { transform: translateX(0); }
+  to { transform: translateX(-80px); }
+}
+@keyframes bubble {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  15% { opacity: 0.9; }
+  100% { transform: translateY(calc(var(--rise, 120px) * -1)) scale(1.1); opacity: 0; }
+}
+@keyframes drip {
+  0% { transform: translateY(0) scale(0.7); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(var(--fall, 60px)) scale(1); opacity: 0; }
+}
+@keyframes flow {
+  0% { transform: translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulseRing {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+@keyframes float {
+  from { transform: translateY(-5px); }
+  to { transform: translateY(5px); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Leaflet in liquid glass: dark controls, 44px touch targets, quiet attribution. */
+.glass-map.leaflet-container {
+  background: #06101f;
+  font-family: Sora, ui-sans-serif, system-ui, sans-serif;
+}
+.glass-map .leaflet-bar {
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7) !important;
+}
+.glass-map .leaflet-bar a {
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  font-size: 20px !important;
+  background: rgba(8, 16, 34, 0.72) !important;
+  color: #e6faff !important;
+  border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+}
+.glass-map .leaflet-bar a:hover { background: rgba(0, 242, 254, 0.18) !important; }
+.glass-map .leaflet-bar a:focus-visible,
+.glass-map.leaflet-container:focus-visible {
+  outline: 2px solid rgba(103, 232, 249, 0.9);
+  outline-offset: -2px;
+}
+.glass-map .leaflet-control-attribution {
+  background: rgba(4, 8, 20, 0.6) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 9px;
+  border-top-left-radius: 8px;
+}
+.glass-map .leaflet-control-attribution a { color: rgba(165, 243, 252, 0.85) !important; }
+.glass-map .leaflet-tooltip {
+  background: rgba(8, 16, 34, 0.85);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  box-shadow: none;
+}
+.glass-map .leaflet-tooltip-top:before { border-top-color: rgba(8, 16, 34, 0.85); }
+.glass-map .leaflet-image-layer { image-rendering: auto; }
